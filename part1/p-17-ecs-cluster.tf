@@ -10,10 +10,9 @@ module "ecs_cluster" {
   instance_type        = "t3.medium"
   key_name             = var.instance_keypair
 
-  enable_ecs_managed_tags = true
-  enable_execute_command  = true
 
-  ecs_services = {
+
+  services = {
     myapp = {
       name             = "${var.environment}-myapp"
       desired_count    = 2
@@ -22,6 +21,8 @@ module "ecs_cluster" {
       container_port   = 80
       docker_image     = var.docker_image
       alb_target_group_health_check_path = "/"
+      enable_ecs_managed_tags = true
+      enable_execute_command  = true
     }
   }
 }
