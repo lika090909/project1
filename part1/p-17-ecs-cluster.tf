@@ -4,26 +4,50 @@ module "ecs_cluster" {
 
   cluster_name = "${var.environment}-ecs-cluster"
 
-  asg = {
-    desired_capacity = 2
-    instance_type    = "t3.medium"
-    key_name        = var.instance_keypair
-    subnet_ids      = module.vpc.private_subnets
   }
 
+# ECS Services Module" 
 
 
-  services = {
-    myapp = {
-      name             = "${var.environment}-myapp"
-      desired_count    = 2
-      task_cpu         = 256
-      task_memory      = 512
-      container_port   = 80
-      docker_image     = var.docker_image
-      alb_target_group_health_check_path = "/"
-      enable_ecs_managed_tags = true
-      enable_execute_command  = true
+module "ecs_service" {
+  source  = "terraform-aws-modules/ecs/aws//modules/service"
+  version = "6.0.0"
+
+  name        = "${var.environment}-myapp"
+  cluster_arn = module.ecs_cluster.arn
+
+  requires_compatibilities = ["EC2"]  # use EC2 launch type
+
+  subnet_ids = module.vpc.private_subnets
+
+  security_group_ingress_rules = {
+    http = {
+      from_port   = 80
+      to_port     = 80
+      protocol    = "tcp"
+      cidr_blocks = ["0.0.0.0/0"]
     }
+  }
+
+  container_definitions = {
+    myapp = {
+      image = var.docker_image       # your Docker image URI
+      cpu   = 256
+      memory = 512
+
+      portMappings = [
+        {
+          containerPort = 80
+          hostPort      = 80   # important for EC2 launch type
+          protocol      = "tcp"
+        }
+      ]
+    }
+  }
+
+  desired_count = 2
+
+  tags = {
+    Environment = var.environment
   }
 }
