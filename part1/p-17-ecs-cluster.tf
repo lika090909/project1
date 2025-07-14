@@ -2,13 +2,14 @@ module "ecs_cluster" {
   source  = "terraform-aws-modules/ecs/aws"
   version = "6.0.0"
 
-  cluster_name        = "${var.environment}-ecs-cluster"
-  vpc_id              = module.vpc.vpc_id
-  subnet_ids          = module.vpc.private_subnets
+  cluster_name = "${var.environment}-ecs-cluster"
 
-  asg_desired_capacity = 2
-  instance_type        = "t3.medium"
-  key_name             = var.instance_keypair
+  asg = {
+    desired_capacity = 2
+    instance_type    = "t3.medium"
+    key_name        = var.instance_keypair
+    subnet_ids      = module.vpc.private_subnets
+  }
 
 
 
