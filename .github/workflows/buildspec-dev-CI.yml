@@ -36,6 +36,6 @@ jobs:
           cd part1
           terraform init -input=false --backend-config=dev.conf
           terraform validate
-          terraform plan -lock=false -input=false -var-file=dev.tfvars
+          terraform plan -lock=false  -input=false -var-file=dev.tfvars
 
   
