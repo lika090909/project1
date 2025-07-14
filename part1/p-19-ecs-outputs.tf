@@ -26,3 +26,18 @@ output "ecs_task_definition_arn" {
 output "ecs_service_target_group_arn" {
   value = module.ecs_cluster.target_group_arns["myapp"]
 }
+
+output "cluster_arn" {
+  description = "ARN that identifies the cluster"
+  value       = module.ecs_cluster.arn
+}
+
+output "cluster_capacity_providers" {
+  description = "Map of cluster capacity providers attributes"
+  value       = module.ecs_cluster.cluster_capacity_providers
+}
+
+output "cluster_autoscaling_capacity_providers" {
+  description = "Map of capacity providers created and their attributes"
+  value       = module.ecs_cluster.autoscaling_capacity_providers
+}
