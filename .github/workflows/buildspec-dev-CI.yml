@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      TERRAFORM_VERSION: "0.15.3"
+      TERRAFORM_VERSION: "1.5.7"
       TF_COMMAND: "apply"   
 
     steps:
