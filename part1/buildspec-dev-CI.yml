@@ -1,39 +1,41 @@
-version: 0.2
+name: Terraform CI
 
-env:
-  variables:
-    TERRAFORM_VERSION: "0.15.3"
-    TF_COMMAND: "apply"
-    #TF_COMMAND: "destroy"
-  parameter-store:
-    AWS_ACCESS_KEY_ID: "/CodeBuild/MY_AWS_ACCESS_KEY_ID"
-    AWS_SECRET_ACCESS_KEY: "/CodeBuild/MY_AWS_SECRET_ACCESS_KEY"
+on:
+  push:
+    branches:
+      - main   
 
-phases:
-  install:
-    runtime-versions:
-      python: 3.7
-    on-failure: ABORT       
-    commands:
-      - tf_version=$TERRAFORM_VERSION
-      - wget https://releases.hashicorp.com/terraform/"$TERRAFORM_VERSION"/terraform_"$TERRAFORM_VERSION"_linux_amd64.zip
-      - unzip terraform_"$TERRAFORM_VERSION"_linux_amd64.zip
-      - mv terraform /usr/local/bin/
-  pre_build:
-    on-failure: ABORT     
-    commands:
-      - echo terraform execution started on `date`            
-  build:
-    on-failure: ABORT   
-    commands:
-    # Project-1: AWS VPC, ASG, ALB, Route53, ACM, Security Groups and SNS 
-      - cd "$CODEBUILD_SRC_DIR/part1"
-      - ls -lrt "$CODEBUILD_SRC_DIR/part1"
-      - terraform --version
-      - terraform init -input=false --backend-config=dev.conf
-      - terraform validate
-      - terraform plan -lock=false -input=false -var-file=dev.tfvars           
-     
-     
+jobs:
+  terraform:
+    runs-on: ubuntu-latest
 
-    
+    env:
+      TERRAFORM_VERSION: "0.15.3"
+      TF_COMMAND: "apply"   
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Setup AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1  
+
+      - name: Install Terraform
+        run: |
+          wget https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip
+          unzip terraform_${TERRAFORM_VERSION}_linux_amd64.zip
+          sudo mv terraform /usr/local/bin/
+          terraform --version
+
+      - name: Terraform Init and Plan
+        run: |
+          cd part1
+          terraform init -input=false --backend-config=dev.conf
+          terraform validate
+          terraform plan -lock=false -input=false -var-file=dev.tfvars
+
+  
