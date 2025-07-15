@@ -11,7 +11,6 @@ jobs:
 
     env:
       TERRAFORM_VERSION: "1.5.7"
-      TF_COMMAND: "apply"   
 
     steps:
       - name: Checkout repo
@@ -31,11 +30,9 @@ jobs:
           sudo mv terraform /usr/local/bin/
           terraform --version
 
-      - name: Terraform Init and Plan
+      - name: Terraform Init, Validate, and Plan
+        working-directory: part1
         run: |
-          cd part1
           terraform init -input=false --backend-config=dev.conf
           terraform validate
-          terraform plan -lock=false  -input=false -var-file=dev.tfvars
-
-  
+          terraform plan -lock=false -input=false -var-file=dev.tfvars
