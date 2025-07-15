@@ -33,6 +33,6 @@ jobs:
       - name: Terraform Init and Plan
       - working-directory: part1
         run: |
-         terraform init -input=false --backend-config=dev.conf
+         terraform init 
          terraform validate
-         terraform  plan -lock=false   -input=false -var-file=dev.tfvars
+         terraform  plan 
