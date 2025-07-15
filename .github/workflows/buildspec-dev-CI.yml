@@ -30,9 +30,9 @@ jobs:
           sudo mv terraform /usr/local/bin/
           terraform --version
 
-      - name: Terraform Init, Validate, and Plan
-        working-directory: part1
+      - name: Terraform Init and Plan
+        working-directory: ./part1
         run: |
-          terraform init -input=false --backend-config=dev.conf
-          terraform validate
-          terraform plan -lock=false -input=false -var-file=dev.tfvars
+         terraform init -input=false --backend-config=dev.conf
+         terraform validate
+         terraform plan -lock=false -input=false -var-file=dev.tfvars:
